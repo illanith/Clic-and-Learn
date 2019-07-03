@@ -1,0 +1,40 @@
+#--------------generation url----------
+	import requests
+	import urllib.parse
+
+	encoded_url =  urllib.parse.quote("http://92.222.81.161/data_report/"+today_date+'/'+str(user)+"/report.pdf")
+	r=requests.get('https://api-ssl.bitly.com/v3/shorten?access_token=a4d15789a8b2bc7e03aeb9f18b1cdeb28c0f84a9&longUrl='+encoded_url)
+	r = r.json()
+	url = r['data']['url']
+
+	#---------------envoi du mail-------------
+
+	m = Mailin("https://api.sendinblue.com/v2.0","PkpRT219bqjUhcg5")
+	data = { "to" : {chatfuel['Reponse'].loc[chatfuel.index == 'email'][0]:first_name+" "+last_name},
+	"from" : ["contact.amiconsulting@gmail.com", "Handi-start"],
+	"subject" : "Report",
+	"html" : "Bonjour "+first_name+",<br><br><br>Voici le resultat de votre test : "+url+"<br><br>A bientot !<br>L'équipe Handi-start",
+	#"attachment" : ["http://92.222.81.161/data_report/"+str(user)+"/report.pdf"]
+	}
+	result = m.send_email(data)
+	#os.system('rm -R /var/www/html/data_report/'+str(user))
+	print(result)
+	print(user)
+
+#------------------envoi de mail si nouveau utilisateur--------
+if (len(list_user)>0):
+	m = Mailin("https://api.sendinblue.com/v2.0","PkpRT219bqjUhcg5")
+	data = { "to" : {"illanith@gmail.com":"Illanith"},
+	"from" : ["contact.amiconsulting@gmail.com", "Handi-start"],
+	"subject" : "Nouveau Clients",
+	"html" : "Bonjour Illanith,<br><br><br>De nouveaux rapports sont disponibles sur :  http://92.222.81.161/data_report/"+today_date+"<br><br>A bientot !<br>Handi-start",
+	#"attachment" : ["http://92.222.81.161/data_report/"+str(user)+"/report.pdf"]
+	}
+	result = m.send_email(data)
+	print(result)
+	print("-------------------------------OK MAIL-----------------")
+for user in list_user:
+	try:
+		function(user)
+	except Exception as e : 
+		print(e)
