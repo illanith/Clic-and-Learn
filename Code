@@ -1,4 +1,221 @@
-#--------------generation url----------
+# ## GENERATION PDF
+
+	# In[1838]:
+
+
+	doc = """
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<link rel="stylesheet" href=\""""+html_path+"""style.css" />
+			<meta charset = "utf-8"/>
+			<title>report</title>
+		</head>
+		<body>
+			<header>
+				<entete>
+				<div id="titre"><img src=\""""+html_path+"""logo.png" width=100><h1>REPORT</h1></div>
+			</entete>
+				<main>
+				<div id='formation'>
+				<p>Inscrivez-vous à la formation <b>valorisez vos compétences</b> :</p>
+				<a href='http://my.visme.co/projects/z4yxmevo-valorisez-vos-competences'>
+				<p><b>Huit jours pour booster votre recherche d'emploi</b></p>
+				<img src=\""""+html_path+"""coaching.png" width=200>
+				</a>
+				<p><i>Cette formation est éligible à un ﬁnancement total ou partiel de Pôle-Emploi</i></p>
+				</div>
+				<div id="presentation">
+				<p><b>Nom :</b> """
+
+
+	# In[1839]:
+
+
+	doc+=first_name+' '+last_name
+
+
+	# In[1840]:
+
+
+	doc+="""</p>
+				<p><b>Age :</b> """
+
+
+	# In[1841]:
+
+
+	doc+=str(chatfuel['Reponse'].loc[chatfuel.index == 'age'][0])
+
+
+	# In[1842]:
+
+
+	doc+="""ans</p>
+				<p><b>Téléphone :</b> """
+
+
+	# In[1843]:
+
+
+	doc+=str(chatfuel['Reponse'].loc[chatfuel.index == 'number'][0])
+
+
+	# In[1844]:
+
+
+	doc+="""</p>
+				<p><b>Email :</b> """
+
+
+	# In[1845]:
+
+
+	doc+=chatfuel['Reponse'].loc[chatfuel.index == 'email'][0]
+
+
+	# In[1846]:
+
+
+	doc+="""</p>
+				<p><b>Niveau d'étude :</b> """
+
+
+	# In[1847]:
+
+
+	doc+=chatfuel['Reponse'].loc[chatfuel.index == 'Q0-2'][0]
+
+
+	# In[1848]:
+
+
+	doc+="""</p>
+				</div>
+			"""
+
+
+	# Tableau Handicap
+
+	# In[1849]:
+
+
+	doc+="""
+				<div id="handicap">
+				<h3>Handicap : </h3>
+					<table>
+	"""
+
+
+	# In[1850]:
+
+
+	for line in df_compensation.itertuples():
+		doc+='					<tr>\n'
+		doc+='						<td>'+line.question+'</td>\n'
+		doc+='						<td>'+line.Reponse+'</td>\n'
+		doc+='					</tr>\n'
+	doc+='				</table>\n'
+	doc+='			</div>\n'
+
+
+	# Diagramme tendance
+
+	# In[1851]:
+
+
+	doc+="""
+				<div id="tendance_metiers">
+					<h3>Tendances Métiers :</h3>
+					<img src="/home/ubuntu/script/V2/file/"""+str(user)+"""/Tendance_Metiers.png" width=500>
+				</div>
+	"""
+
+
+	# Conseils
+
+	# In[1852]:
+
+
+	# doc+='			<div id="conseil">\n'
+	# doc+='				<p>\n'
+	# doc+=texte_conseil
+	# doc+='\n				</p>\n'
+	# doc+='			</div>\n'
+
+
+	# Metier en fonction du niveau d'étude
+
+	# In[1853]:
+
+
+	doc+="""
+				<div id="metier_selon_etude">
+				<h3>Metiers selon étude : </h3>
+					<table>
+	"""
+
+
+	# In[1854]:
+
+
+	for line in metier_selon_etudes.itertuples():
+		doc+='					<tr>\n'
+		doc+='						<td>'+line.metiers+'</td>\n'
+		doc+='						<td>'+line.categorie+'</td>\n'
+		doc+='					</tr>\n'
+	doc+='				</table>\n'
+	doc+='				</div>\n'
+
+
+	# Tous les metiers possibles
+
+	# In[1855]:
+
+
+	doc+="""
+				<div id="tous_metiers_possible">
+				<h3>Tous les métiers possibles : </h3>
+					<table>
+	"""
+
+
+	# In[1856]:
+
+
+	for line in tous_metiers_possible.itertuples():
+		doc+='					<tr>\n'
+		doc+='						<td>'+line.metiers+'</td>\n'
+		doc+='						<td>'+line.categorie+'</td>\n'
+		doc+='					</tr>\n'
+	doc+='				</table>\n'
+	doc+='				</div>\n'
+
+
+	# In[1857]:
+
+
+	doc+="""		</main>
+			</header>
+		</body>
+		</html>
+		"""
+
+
+	# In[1858]:
+
+	
+	with open('file/'+str(user)+'/index.html','w') as file:
+		file.write(doc)
+	#print(doc)
+	os.system('xvfb-run wkhtmltopdf -B 25 -L 13 -R 13 -T 25 '+'file/'+str(user)+'/index.html file/'+str(user)+'/report.pdf')
+	os.system('mkdir /var/www/html/data_report/'+today_date)
+	os.system('mkdir /var/www/html/data_report/'+today_date+'/'+str(user))
+	os.system('cp file/'+str(user)+'/report.pdf /var/www/html/data_report/'+today_date+'/'+str(user)+'/report.pdf')
+	#os.system('echo "Bonjour, '+first_name+'" | mail -s "Résultat Handi-start" '+chatfuel['Reponse'].loc[chatfuel.index == 'email'][0]+' -A file/'+str(user)+'/report.pdf ')
+	
+
+	#--------------generation url----------
 	import requests
 	import urllib.parse
 
